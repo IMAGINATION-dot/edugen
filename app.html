@@ -748,8 +748,8 @@ function exportAnswers() {
   '.num{color:#999;font-size:12px;font-family:monospace;min-width:90px}' +
   '.ans{font-weight:600;color:#2d5a27}' +
   '.pts{font-size:12px;color:#999;font-family:monospace}' +
-  '@media print{.vh{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'
-</style></head><body>' +
+  '@media print{.vh{-webkit-print-color-adjust:exact;print-color-adjust:exact}}' +
+  '</style></head><body>' +
   '<h1>🗝 Ответы: ' + lastResult.topic + '</h1>' +
   '<div class="meta">' + lastResult.grade + ' &nbsp;·&nbsp; ' + lastResult.difficulty + ' &nbsp;·&nbsp; ' + lastResult.estimatedTimePerVariant + '</div>';
 
@@ -790,8 +790,8 @@ function exportWord() {
   '.tn{font-size:9pt;font-weight:bold;text-transform:uppercase;color:#2d5a27;margin-bottom:4px;font-family:"Times New Roman",Times,serif}' +
   '.tq{font-size:12pt;line-height:1.7;margin-bottom:6px;font-family:"Times New Roman",Times,serif}' +
   '.to{font-size:11pt;padding-left:16px;margin-bottom:2px;font-family:"Times New Roman",Times,serif}' +
-  '.ans-line{font-size:11pt;color:#888;margin-top:10px;font-family:"Times New Roman",Times,serif}'
-</style></head><body>' +
+  '.ans-line{font-size:11pt;color:#888;margin-top:10px;font-family:"Times New Roman",Times,serif}' +
+  '</style></head><body>' +
   '<h1>EduGen — ' + lastResult.topic + '</h1>' +
   '<div class="meta">' + lastResult.grade + ' &nbsp;&middot;&nbsp; ' + lastResult.difficulty + ' &nbsp;&middot;&nbsp; Время: ' + lastResult.estimatedTimePerVariant + '</div>';
 
@@ -832,8 +832,8 @@ function exportPdf() {
   '.tq{font-size:14px;line-height:1.7;margin-bottom:7px}' +
   '.to{font-size:13px;color:#444;padding-left:14px;margin-bottom:3px}' +
   '.ans-line{font-size:13px;color:#999;margin-top:10px;font-family:monospace;letter-spacing:1px}' +
-  '@media print{.vh{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'
-</style></head><body>' +
+  '@media print{.vh{-webkit-print-color-adjust:exact;print-color-adjust:exact}}' +
+  '</style></head><body>' +
   '<h1>Задания: ' + lastResult.topic + '</h1>' +
   '<div class="meta">' + lastResult.grade + ' &nbsp;&middot;&nbsp; ' + lastResult.difficulty + ' &nbsp;&middot;&nbsp; ' + lastResult.estimatedTimePerVariant + '</div>';
 
