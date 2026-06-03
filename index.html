@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduGen — Вход</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #efefec; --white: #fff;
+  --green: #2d5a27; --green2: #3d7535;
+  --text: #1a1a1a; --text2: #555; --text3: #999;
+  --border: #ddd; --inp: #e4e4e0; --r: 14px;
+  --err: #c0392b;
+}
+body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+
+.card { background: var(--white); border-radius: 24px; padding: 44px 40px 40px; width: 100%; max-width: 420px; box-shadow: 0 8px 40px rgba(0,0,0,.08); }
+
+.logo { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+.logo-sq { width: 48px; height: 48px; background: var(--green); border-radius: 11px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.logo-sq svg { width: 28px; height: 28px; }
+.logo-name { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700; line-height: 1; }
+.logo-name span { color: var(--text3); font-weight: 400; }
+
+h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+.sub { font-size: 13px; color: var(--text2); margin-bottom: 28px; line-height: 1.5; }
+
+/* Steps */
+.step { display: none; }
+.step.active { display: block; }
+
+label { font-size: 13px; font-weight: 700; color: var(--text); display: block; margin-bottom: 7px; }
+.hint { font-size: 12px; color: var(--text3); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+
+.inp-wrap { position: relative; }
+.inp-prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--text2); pointer-events: none; font-family: 'Manrope', sans-serif; }
+
+input[type=tel], input[type=email], input[type=text] {
+  width: 100%; background: var(--inp); border: 2px solid transparent; border-radius: var(--r);
+  font-family: 'Manrope', sans-serif; font-size: 15px; color: var(--text);
+  padding: 13px 15px; outline: none; transition: all .2s;
+  margin-bottom: 4px;
+}
+input[type=tel] { padding-left: 48px; letter-spacing: 1px; }
+input[type=tel]:focus, input[type=email]:focus, input[type=text]:focus {
+  background: #dcdcd8; border-color: var(--green);
+}
+input.err { border-color: var(--err) !important; background: #fdf2f2; }
+
+.otp-row { display: flex; gap: 8px; margin-bottom: 4px; }
+.otp-row input {
+  flex: 1; text-align: center; font-size: 22px; font-weight: 700;
+  padding: 12px 4px; font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 0;
+}
+
+.btn { width: 100%; padding: 14px; background: var(--green); color: #fff; border: none; border-radius: var(--r); font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; }
+.btn:hover:not(:disabled) { background: var(--green2); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,90,39,.25); }
+.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-ghost { background: transparent; color: var(--green); border: 2px solid var(--border); margin-top: 10px; }
+.btn-ghost:hover:not(:disabled) { background: rgba(45,90,39,.06); border-color: var(--green); transform: none; box-shadow: none; }
+
+.sp { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.err-msg { font-size: 13px; color: var(--err); margin-top: 8px; display: none; background: #fdf2f2; border-radius: 9px; padding: 9px 13px; }
+.err-msg.show { display: block; }
+
+.timer { font-size: 12px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; margin-top: 10px; text-align: center; }
+.timer a { color: var(--green); cursor: pointer; text-decoration: underline; }
+
+.back { font-size: 13px; color: var(--text3); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 18px; transition: color .15s; }
+.back:hover { color: var(--text); }
+
+.notice { background: #f0f8f0; border: 1px solid #b8ddb8; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #2d5a27; line-height: 1.6; margin-bottom: 20px; }
+.notice strong { display: block; margin-bottom: 3px; }
+
+/* recaptcha badge stays bottom-right, just make it less intrusive */
+.grecaptcha-badge { opacity: .4; }
+
+#recaptcha-container { margin-top: 8px; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div class="logo-sq">
+      <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <text x="2" y="20" font-family="Georgia,serif" font-size="20" font-weight="bold" fill="white">E</text>
+        <text x="14" y="26" font-family="Georgia,serif" font-size="14" font-weight="bold" fill="rgba(255,255,255,0.8)">G</text>
+      </svg>
+    </div>
+    <div class="logo-name">Edu<span>Gen</span></div>
+  </div>
+
+  <!-- ── ШАГ 1: Ввод телефона ── -->
+  <div class="step active" id="step1">
+    <h2>Войти в EduGen</h2>
+    <p class="sub">Введите номер телефона — отправим код подтверждения по SMS.</p>
+
+    <label for="phoneInput">Номер телефона</label>
+    <div class="inp-wrap">
+      <span class="inp-prefix">+7</span>
+      <input type="tel" id="phoneInput" placeholder="900 123 45 67" maxlength="14"
+        oninput="formatPhone(this)" onkeydown="if(event.key==='Enter') sendCode()"/>
+    </div>
+    <div class="hint">Виртуальные и одноразовые номера не принимаются</div>
+    <div class="err-msg" id="err1"></div>
+
+    <div id="recaptcha-container"></div>
+
+    <button class="btn" id="btnSend" onclick="sendCode()">
+      Получить SMS-код
+    </button>
+  </div>
+
+  <!-- ── ШАГ 2: Ввод OTP ── -->
+  <div class="step" id="step2">
+    <span class="back" onclick="goBack(1)">← Назад</span>
+    <h2>Введите код</h2>
+    <p class="sub" id="step2sub">Код отправлен на номер <strong id="phoneLbl"></strong></p>
+
+    <div class="otp-row" id="otpRow">
+      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,0)"/>
+      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,1)"/>
+      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,2)"/>
+      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,3)"/>
+      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,4)"/>
+      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,5)"/>
+    </div>
+    <div class="err-msg" id="err2"></div>
+
+    <div class="timer" id="timerBlock">
+      Повторная отправка через <span id="timerSec">60</span> сек.
+    </div>
+    <div class="timer" id="resendBlock" style="display:none">
+      <a onclick="resendCode()">Отправить код повторно</a>
+    </div>
+
+    <button class="btn" id="btnVerify" onclick="verifyCode()">
+      Подтвердить
+    </button>
+  </div>
+
+  <!-- ── ШАГ 3: Email (при первом входе) ── -->
+  <div class="step" id="step3">
+    <h2>Добавьте email</h2>
+    <div class="notice">
+      <strong>Зачем?</strong>
+      Email нужен для восстановления доступа, если потеряете телефон.
+      На него придёт письмо — нужно нажать ссылку для подтверждения.
+    </div>
+
+    <label for="emailInput">Ваш email</label>
+    <input type="email" id="emailInput" placeholder="teacher@school.ru"
+      onkeydown="if(event.key==='Enter') linkEmail()"/>
+    <div class="err-msg" id="err3"></div>
+
+    <button class="btn" id="btnEmail" onclick="linkEmail()">Привязать и подтвердить</button>
+    <button class="btn btn-ghost" onclick="skipEmail()">Пропустить пока</button>
+  </div>
+
+  <!-- ── ШАГ 4: Письмо отправлено ── -->
+  <div class="step" id="step4">
+    <h2>Проверьте почту ✉️</h2>
+    <p class="sub">Мы отправили письмо с ссылкой подтверждения на <strong id="emailSentTo"></strong>.<br><br>
+    Перейдите по ссылке в письме, затем нажмите кнопку ниже.</p>
+    <button class="btn" onclick="continueToApp()">Я подтвердил — продолжить</button>
+    <button class="btn btn-ghost" id="btnResendEmail" onclick="resendVerification()">Отправить письмо снова</button>
+  </div>
+
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, linkWithCredential, EmailAuthProvider, sendEmailVerification }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+// ══════════════════════════════════════════════════
+//  ⚠️  ЗАМЕНИ ЭТИ ЗНАЧЕНИЯ на свои из Firebase Console
+//  (Настройки проекта → Ваши приложения → Конфиг)
+// ══════════════════════════════════════════════════
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyDWoeMDdjr6bAeUrenZ5TzgNh8GBAqjsqI",
+  authDomain: "edugen-9108a.firebaseapp.com",
+  projectId: "edugen-9108a",
+  storageBucket: "edugen-9108a.firebasestorage.app",
+  messagingSenderId: "503357109913",
+  appId: "1:503357109913:web:716dd637e8903220e02a08",
+  measurementId: "G-FCYCC2PRMF"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+auth.languageCode = 'ru';
+
+let confirmationResult = null;
+let timerInterval = null;
+
+// Делаем функции глобальными (вызываются из onclick в HTML)
+window.sendCode      = sendCode;
+window.verifyCode    = verifyCode;
+window.resendCode    = resendCode;
+window.linkEmail     = linkEmail;
+window.skipEmail     = skipEmail;
+window.continueToApp = continueToApp;
+window.resendVerification = resendVerification;
+window.goBack        = goBack;
+window.formatPhone   = formatPhone;
+window.otpInput      = otpInput;
+
+// ── При загрузке: если уже залогинен → в app ───────
+auth.onAuthStateChanged(function(user) {
+  if (user && sessionStorage.getItem('edugen_authed')) {
+    window.location.href = 'app.html';
+  }
+});
+
+// ── Форматирование номера ───────────────────────────
+function formatPhone(inp) {
+  var v = inp.value.replace(/\D/g, '').slice(0, 10);
+  inp.value = v;
+}
+
+// ── Шаг 1: Отправить SMS ───────────────────────────
+async function sendCode() {
+  var raw = document.getElementById('phoneInput').value.replace(/\D/g, '');
+  if (raw.length < 10) { showErr('err1', 'Введите полный номер телефона (10 цифр без +7)'); return; }
+  var phone = '+7' + raw;
+
+  clearErr('err1');
+  setLoading('btnSend', true, 'Отправляем...');
+
+  try {
+    // Инициализируем reCAPTCHA (невидимая)
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
+        size: 'invisible',
+        callback: function() {}
+      });
+    }
+
+    confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+    document.getElementById('phoneLbl').textContent = phone;
+    showStep(2);
+    startTimer(60);
+    document.querySelector('#otpRow input').focus();
+
+  } catch(e) {
+    console.error(e);
+    var msg = translateError(e.code);
+    showErr('err1', msg);
+    // Сбрасываем reCAPTCHA при ошибке
+    if (window.recaptchaVerifier) {
+      window.recaptchaVerifier.clear();
+      window.recaptchaVerifier = null;
+    }
+  } finally {
+    setLoading('btnSend', false, 'Получить SMS-код');
+  }
+}
+
+// ── Шаг 2: OTP навигация ───────────────────────────
+function otpInput(el, idx) {
+  // Разрешаем только цифры
+  el.value = el.value.replace(/\D/g, '');
+  if (el.value && idx < 5) {
+    document.querySelectorAll('#otpRow input')[idx + 1].focus();
+  }
+  // Если все 6 цифр введены — автоверификация
+  var all = Array.from(document.querySelectorAll('#otpRow input')).map(function(i) { return i.value; }).join('');
+  if (all.length === 6) verifyCode();
+}
+
+// ── Шаг 2: Проверить код ───────────────────────────
+async function verifyCode() {
+  var code = Array.from(document.querySelectorAll('#otpRow input')).map(function(i) { return i.value; }).join('');
+  if (code.length < 6) { showErr('err2', 'Введите все 6 цифр кода'); return; }
+  if (!confirmationResult) { showErr('err2', 'Сначала запросите код'); return; }
+
+  clearErr('err2');
+  setLoading('btnVerify', true, 'Проверяем...');
+
+  try {
+    var result = await confirmationResult.confirm(code);
+    var user = result.user;
+
+    // Новый пользователь (нет email) → шаг 3
+    if (!user.email) {
+      showStep(3);
+    } else if (!user.emailVerified) {
+      document.getElementById('emailSentTo').textContent = user.email;
+      showStep(4);
+    } else {
+      // Всё ок — в приложение
+      sessionStorage.setItem('edugen_authed', '1');
+      window.location.href = 'app.html';
+    }
+
+  } catch(e) {
+    console.error(e);
+    showErr('err2', translateError(e.code));
+    // Подсвечиваем поля
+    document.querySelectorAll('#otpRow input').forEach(function(i) { i.classList.add('err'); });
+  } finally {
+    setLoading('btnVerify', false, 'Подтвердить');
+  }
+}
+
+// ── Шаг 3: Привязать email ─────────────────────────
+async function linkEmail() {
+  var email = document.getElementById('emailInput').value.trim();
+  if (!email || !email.includes('@')) { showErr('err3', 'Введите корректный email'); return; }
+
+  clearErr('err3');
+  setLoading('btnEmail', true, 'Отправляем...');
+
+  try {
+    var user = auth.currentUser;
+    // Привязываем email без пароля — только для восстановления
+    // (используем updateEmail + sendEmailVerification)
+    await user.updateEmail(email);
+    await sendEmailVerification(user, {
+      url: window.location.origin + '/app.html'
+    });
+    document.getElementById('emailSentTo').textContent = email;
+    showStep(4);
+  } catch(e) {
+    console.error(e);
+    showErr('err3', translateError(e.code));
+  } finally {
+    setLoading('btnEmail', false, 'Привязать и подтвердить');
+  }
+}
+
+function skipEmail() {
+  sessionStorage.setItem('edugen_authed', '1');
+  window.location.href = 'app.html';
+}
+
+async function continueToApp() {
+  await auth.currentUser?.reload();
+  sessionStorage.setItem('edugen_authed', '1');
+  window.location.href = 'app.html';
+}
+
+async function resendVerification() {
+  try {
+    await sendEmailVerification(auth.currentUser, { url: window.location.origin + '/app.html' });
+    showToastLocal('Письмо отправлено повторно');
+    document.getElementById('btnResendEmail').disabled = true;
+    setTimeout(function() { document.getElementById('btnResendEmail').disabled = false; }, 30000);
+  } catch(e) {
+    showToastLocal(translateError(e.code));
+  }
+}
+
+// ── Повторная отправка SMS ─────────────────────────
+async function resendCode() {
+  document.querySelectorAll('#otpRow input').forEach(function(i) { i.value = ''; i.classList.remove('err'); });
+  clearErr('err2');
+  if (window.recaptchaVerifier) { window.recaptchaVerifier.clear(); window.recaptchaVerifier = null; }
+  document.getElementById('resendBlock').style.display = 'none';
+  document.getElementById('timerBlock').style.display = 'block';
+  goBack(1);
+  await sendCode();
+}
+
+// ── Навигация ──────────────────────────────────────
+function goBack(toStep) {
+  showStep(toStep);
+  if (timerInterval) clearInterval(timerInterval);
+}
+
+function showStep(n) {
+  document.querySelectorAll('.step').forEach(function(s, i) {
+    s.classList.toggle('active', i === n - 1);
+  });
+}
+
+// ── Таймер повторной отправки ──────────────────────
+function startTimer(sec) {
+  document.getElementById('timerBlock').style.display = 'block';
+  document.getElementById('resendBlock').style.display = 'none';
+  document.getElementById('timerSec').textContent = sec;
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(function() {
+    sec--;
+    document.getElementById('timerSec').textContent = sec;
+    if (sec <= 0) {
+      clearInterval(timerInterval);
+      document.getElementById('timerBlock').style.display = 'none';
+      document.getElementById('resendBlock').style.display = 'block';
+    }
+  }, 1000);
+}
+
+// ── Хелперы ────────────────────────────────────────
+function setLoading(btnId, loading, label) {
+  var btn = document.getElementById(btnId);
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<div class="sp"></div> ' + label
+    : label;
+}
+
+function showErr(id, msg) {
+  var el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearErr(id) {
+  var el = document.getElementById(id);
+  el.textContent = '';
+  el.classList.remove('show');
+  document.querySelectorAll('#otpRow input').forEach(function(i) { i.classList.remove('err'); });
+}
+
+function showToastLocal(msg) {
+  // простой алерт как fallback
+  alert(msg);
+}
+
+function translateError(code) {
+  var map = {
+    'auth/invalid-phone-number':        'Неверный формат номера телефона',
+    'auth/too-many-requests':           'Слишком много попыток. Попробуйте позже.',
+    'auth/invalid-verification-code':   'Неверный код. Проверьте SMS и попробуйте снова.',
+    'auth/code-expired':                'Код истёк. Запросите новый.',
+    'auth/session-expired':             'Сессия истекла. Запросите новый код.',
+    'auth/email-already-in-use':        'Этот email уже привязан к другому аккаунту.',
+    'auth/invalid-email':               'Неверный формат email.',
+    'auth/network-request-failed':      'Проблема с интернетом. Проверьте соединение.',
+    'auth/quota-exceeded':              'Превышен лимит SMS. Попробуйте позже.',
+    'auth/blocked-all-requests':        'Запросы временно заблокированы. Попробуйте через час.',
+  };
+  return map[code] || ('Ошибка: ' + (code || 'неизвестная'));
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduGen</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #efefec; --white: #fff; --sw: 230px;
+  --green: #2d5a27; --green2: #3d7535;
+  --text: #1a1a1a; --text2: #555; --text3: #999;
+  --border: #ddd; --inp: #e4e4e0; --r: 16px;
+}
+body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.layout { display: flex; min-height: 100vh; }
+
+/* SIDEBAR */
+.sidebar { width: var(--sw); background: var(--bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+.logo-block { padding: 16px 14px 14px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--border); }
+.logo-svg { width: 52px; height: 52px; flex-shrink: 0; border-radius: 11px; }
+.logo-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; line-height: 1.1; }
+.logo-name small { font-size: 18px; color: var(--text2); font-weight: 400; display: block; }
+.sb-hdr { padding: 14px 14px 4px; font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1.8px; }
+.hist { padding: 0 8px; flex: 1; }
+.hist-item { padding: 9px 10px; border-radius: 10px; font-size: 13px; color: var(--text2); cursor: pointer; margin-bottom: 2px; transition: background .15s; line-height: 1.35; }
+.hist-item:hover { background: rgba(0,0,0,.06); }
+.hist-item.on { background: rgba(45,90,39,.1); color: var(--green); }
+.hist-empty { padding: 9px 10px; font-size: 13px; color: var(--text3); font-style: italic; }
+.new-btn { margin: 8px 10px 16px; padding: 12px; background: var(--green); color: #fff; border: none; border-radius: 12px; font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; width: calc(100% - 20px); transition: background .2s; }
+.new-btn:hover { background: var(--green2); }
+
+/* MAIN */
+.main { flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { padding: 22px 36px 16px; border-bottom: 1px solid var(--border); background: var(--white); }
+.work-title { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 700; text-transform: uppercase; border: none; outline: none; background: transparent; width: 100%; color: var(--text); letter-spacing: -.3px; }
+.work-title::placeholder { color: #ccc; }
+.top-sub { font-size: 12px; color: var(--text3); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
+.content { flex: 1; display: flex; background: var(--white); overflow: hidden; }
+
+/* FORM */
+.form-panel { width: 420px; flex-shrink: 0; border-right: 1px solid var(--border); padding: 22px; overflow-y: auto; max-height: calc(100vh - 83px); display: flex; flex-direction: column; gap: 16px; }
+label.lbl { font-size: 14px; font-weight: 700; color: var(--text); display: block; margin-bottom: 7px; }
+label.lbl .opt { font-weight: 400; color: var(--text3); font-size: 13px; }
+input[type=text], textarea, select { width: 100%; background: var(--inp); border: none; border-radius: var(--r); font-family: 'Manrope', sans-serif; font-size: 14px; color: var(--text); padding: 12px 15px; outline: none; transition: box-shadow .2s, background .2s; resize: none; }
+input[type=text]:focus, textarea:focus, select:focus { background: #dcdcd8; box-shadow: 0 0 0 3px rgba(45,90,39,.15); }
+input[type=text]::placeholder, textarea::placeholder { color: var(--text3); }
+textarea { min-height: 72px; }
+select { appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23999' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+select option { background: #fff; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* upload */
+.upzone { background: var(--inp); border-radius: var(--r); padding: 18px 14px; text-align: center; position: relative; cursor: pointer; border: 2px dashed transparent; transition: all .2s; }
+.upzone:hover, .upzone.drag { background: rgba(45,90,39,.07); border-color: var(--green); }
+.upzone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border-radius: var(--r); }
+.up-txt { font-size: 13px; color: var(--text2); line-height: 1.5; }
+.flist { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+.fchip { display: flex; align-items: center; gap: 7px; background: var(--inp); border-radius: 10px; padding: 7px 11px; font-size: 12px; color: var(--text2); }
+.fchip .rm { margin-left: auto; cursor: pointer; color: var(--text3); font-size: 14px; }
+.fchip .rm:hover { color: #c0392b; }
+
+/* counters */
+.cbox { background: var(--inp); border-radius: var(--r); padding: 12px 14px; }
+.clbl { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+.cctrl { display: flex; align-items: center; gap: 10px; }
+.cbtn { width: 30px; height: 30px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all .15s; }
+.cbtn:hover { background: var(--green); color: #fff; border-color: var(--green); }
+.cval { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 700; min-width: 30px; text-align: center; }
+
+/* types */
+.tgrid { display: flex; flex-wrap: wrap; gap: 7px; }
+.ttype { background: var(--inp); border: 2px solid transparent; border-radius: 10px; padding: 7px 13px; font-size: 13px; font-weight: 500; color: var(--text2); cursor: pointer; font-family: 'Manrope', sans-serif; transition: all .15s; }
+.ttype.on { background: rgba(45,90,39,.1); border-color: var(--green); color: var(--green); font-weight: 700; }
+hr.sep { border: none; border-top: 1px solid var(--border); }
+
+/* gen button */
+.gbtn { width: 100%; padding: 15px; background: var(--green); color: #fff; border: none; border-radius: var(--r); font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.gbtn:hover:not(:disabled) { background: var(--green2); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,90,39,.3); }
+.gbtn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
+.sp { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* OUTPUT */
+.out-panel { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+.out-top { padding: 16px 26px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.out-ttl { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; }
+.exp-row { display: flex; gap: 7px; }
+.ebtn { display: flex; align-items: center; gap: 5px; padding: 7px 13px; border-radius: 9px; border: 1px solid var(--border); background: var(--inp); font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; transition: all .2s; }
+.ebtn:hover:not(:disabled) { border-color: var(--green); color: var(--green); background: rgba(45,90,39,.06); }
+.ebtn:disabled { opacity: .4; cursor: not-allowed; }
+.out-scroll { flex: 1; overflow-y: auto; padding: 26px; }
+
+.empty-st { min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 13px; text-align: center; color: var(--text3); padding: 40px; }
+.empty-st .ico { font-size: 52px; opacity: .3; }
+.empty-st .ttl { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--text2); font-weight: 700; }
+.empty-st .sub { font-size: 14px; line-height: 1.6; max-width: 320px; }
+
+.load-st { min-height: 300px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+.big-sp { width: 48px; height: 48px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin .8s linear infinite; }
+.load-txt { font-size: 14px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; animation: blink 1.4s infinite; }
+@keyframes blink { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+/* cards */
+.vcard { background: #fafaf8; border: 1px solid var(--border); border-radius: 16px; margin-bottom: 20px; overflow: hidden; animation: fu .35s ease both; }
+@keyframes fu { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:none} }
+.vcard-head { padding: 13px 18px; background: var(--green); display: flex; align-items: center; gap: 12px; }
+.vbadge { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 700; color: #fff; }
+.vmeta { font-size: 12px; color: rgba(255,255,255,.7); font-family: 'IBM Plex Mono', monospace; }
+.vtime { margin-left: auto; background: rgba(255,255,255,.2); border-radius: 20px; padding: 3px 10px; font-size: 12px; color: #fff; font-family: 'IBM Plex Mono', monospace; white-space: nowrap; }
+.vbody { padding: 16px 18px; }
+.ti { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+.ti:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+.ti-num { font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 4px; font-family: 'IBM Plex Mono', monospace; }
+.ti-q { font-size: 14px; line-height: 1.7; margin-bottom: 7px; }
+.ti-opt { font-size: 13px; color: var(--text2); padding-left: 7px; margin-bottom: 3px; }
+.ti-key { background: #f0f8f0; border: 1px solid #b8ddb8; border-radius: 9px; padding: 7px 12px; font-size: 13px; color: var(--green); display: flex; gap: 7px; align-items: flex-start; }
+.ti-klbl { font-weight: 700; font-size: 11px; font-family: 'IBM Plex Mono', monospace; flex-shrink: 0; margin-top: 1px; }
+
+.regen-btn { background: none; border: 1px solid var(--border); border-radius: 7px; color: var(--text3); font-size: 15px; cursor: pointer; padding: 2px 7px; line-height: 1; transition: all .15s; flex-shrink: 0; }
+.regen-btn:hover { border-color: var(--green); color: var(--green); background: rgba(45,90,39,.07); }
+.regen-btn.spinning { animation: spin .6s linear infinite; pointer-events: none; }
+.ti-ans-line { font-size: 13px; color: var(--text3); margin-top: 8px; font-family: 'IBM Plex Mono', monospace; letter-spacing: 1px; }
+.stats-bar { padding: 9px 26px; border-top: 1px solid var(--border); background: var(--bg); display: flex; gap: 18px; font-size: 12px; font-family: 'IBM Plex Mono', monospace; color: var(--text3); flex-shrink: 0; }
+.stat { display: flex; align-items: center; gap: 5px; }
+.sdot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+.sval { color: var(--text2); font-weight: 500; }
+
+.toast { position: fixed; bottom: 22px; right: 22px; border-radius: 11px; padding: 11px 17px; font-size: 13px; box-shadow: 0 8px 24px rgba(0,0,0,.18); z-index: 999; opacity: 0; transform: translateY(60px); transition: all .3s ease; pointer-events: none; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.err { background: #c0392b; color: #fff; }
+.toast.ok { background: var(--green); color: #fff; }
+.toast.info { background: var(--text); color: #fff; }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+/* USER BAR */
+.user-bar { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 9px; background: var(--bg); }
+.user-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; font-family: 'IBM Plex Mono', monospace; }
+.user-info { flex: 1; overflow: hidden; }
+.user-phone { font-size: 12px; font-weight: 600; color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.user-email { font-size: 11px; color: var(--text3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.logout-btn { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; padding: 3px; transition: color .15s; flex-shrink: 0; }
+.logout-btn:hover { color: var(--err, #c0392b); }
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="logo-block">
+      <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+        <rect width="52" height="52" rx="11" fill="#2d5a27"/>
+        <text x="5" y="29" font-family="Georgia,serif" font-size="24" font-weight="bold" fill="white">E</text>
+        <text x="26" y="45" font-family="Georgia,serif" font-size="20" font-weight="bold" fill="rgba(255,255,255,0.85)">G</text>
+      </svg>
+      <div class="logo-name">Edu<small>Gen</small></div>
+    </div>
+    <div class="user-bar" id="userBar">
+      <div class="user-avatar" id="userInitial">?</div>
+      <div class="user-info">
+        <div class="user-phone" id="userPhone">Загрузка...</div>
+        <div class="user-email" id="userEmail"></div>
+      </div>
+      <button class="logout-btn" onclick="doLogout()" title="Выйти">⏻</button>
+    </div>
+    <div class="sb-hdr">Предыдущие работы</div>
+    <div class="hist" id="hist"><div class="hist-empty">Пока нет работ</div></div>
+    <div style="padding:8px 10px 16px">
+      <button class="new-btn" onclick="newWork()">+ Новая работа</button>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <input class="work-title" id="wTitle" type="text" placeholder="НАЗВАНИЕ РАБОТЫ" maxlength="80"/>
+      <div class="top-sub" id="topSub">Новая работа · EduGen</div>
+    </div>
+
+    <div class="content">
+      <!-- FORM PANEL -->
+      <div class="form-panel">
+
+        <div>
+          <label class="lbl">Укажите тему для заданий:</label>
+          <input type="text" id="topic" placeholder="Введите тему..."/>
+        </div>
+
+        <div>
+          <label class="lbl">Учебный материал <span class="opt">(не обязательно)</span></label>
+          <div class="upzone" id="upZone"
+            ondragover="event.preventDefault();this.classList.add('drag')"
+            ondragleave="this.classList.remove('drag')"
+            ondrop="dropFiles(event)">
+            <input type="file" id="fileIn" multiple accept=".txt,.pdf,.docx,image/*,.pptx" onchange="addFiles(this.files)"/>
+            <div style="font-size:22px;margin-bottom:5px">📎</div>
+            <div class="up-txt">Перетащите или выберите файлы (pdf, word, jpeg)</div>
+          </div>
+          <div class="flist" id="flist"></div>
+        </div>
+
+        <hr class="sep">
+
+        <div class="g2">
+          <div>
+            <label class="lbl" style="font-size:13px">Класс</label>
+            <select id="grade">
+              <option>1 класс</option>
+              <option>2 класс</option>
+              <option>3 класс</option>
+              <option>4 класс</option>
+              <option>5 класс</option>
+              <option>6 класс</option>
+              <option>7 класс</option>
+              <option>8 класс</option>
+              <option>9 класс</option>
+              <option selected>10 класс</option>
+              <option>11 класс</option>
+              <option>Колледж / СПО</option>
+              <option>Вуз</option>
+            </select>
+          </div>
+          <div>
+            <label class="lbl" style="font-size:13px">Сложность</label>
+            <select id="diff">
+              <option>Лёгкий</option>
+              <option selected>Средний</option>
+              <option>Сложный</option>
+              <option>Смешанный</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="lbl" style="font-size:13px">Количество</label>
+          <div class="g2">
+            <div class="cbox">
+              <div class="clbl">Вариантов</div>
+              <div class="cctrl">
+                <button class="cbtn" onclick="chg('v',-1)">−</button>
+                <div class="cval" id="vVal">2</div>
+                <button class="cbtn" onclick="chg('v',1)">+</button>
+              </div>
+            </div>
+            <div class="cbox">
+              <div class="clbl">Заданий</div>
+              <div class="cctrl">
+                <button class="cbtn" onclick="chg('t',-1)">−</button>
+                <div class="cval" id="tVal">5</div>
+                <button class="cbtn" onclick="chg('t',1)">+</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="lbl" style="font-size:13px">Типы заданий</label>
+          <div class="tgrid" id="tgrid">
+            <button class="ttype on" data-t="Тест (выбор ответа)">Тест</button>
+            <button class="ttype on" data-t="Открытый вопрос">Открытый вопрос</button>
+            <button class="ttype" data-t="Задача с решением">Задача</button>
+            <button class="ttype" data-t="Заполнить пропуски">Пропуски</button>
+            <button class="ttype" data-t="Сопоставление">Сопоставление</button>
+            <button class="ttype" data-t="Эссе">Эссе</button>
+          </div>
+        </div>
+
+        <div>
+          <label class="lbl" style="font-size:13px">Доп. инструкции <span class="opt">(необязательно)</span></label>
+          <textarea id="extra" placeholder="Напр.: акцент на практике, задачи на логику..."></textarea>
+        </div>
+
+        <button class="gbtn" id="genBtn" onclick="generate()">
+          <span></span> Сгенерировать задания
+        </button>
+
+      </div>
+
+      <!-- OUTPUT PANEL -->
+      <div class="out-panel">
+        <div class="out-top">
+          <div class="out-ttl" id="outTtl">Результат</div>
+          <div class="exp-row">
+            <button class="ebtn" id="eAnswers" onclick="exportAnswers()" disabled>🗝 Ответы</button>
+            <button class="ebtn" id="eWord" onclick="exportWord()" disabled>📄 Word</button>
+            <button class="ebtn" id="ePdf"  onclick="exportPdf()"  disabled>📑 PDF</button>
+          </div>
+        </div>
+        <div class="out-scroll" id="outScroll">
+          <div class="empty-st">
+            <div class="ico">📋</div>
+            <div class="ttl">Здесь появятся задания</div>
+            <div class="sub">Заполните параметры и нажмите «Сгенерировать задания»</div>
+          </div>
+        </div>
+        <div class="stats-bar" id="sbar" style="display:none">
+          <div class="stat"><div class="sdot"></div>Вариантов: <span class="sval" id="sV">—</span></div>
+          <div class="stat"><div class="sdot" style="background:#777"></div>Заданий: <span class="sval" id="sT">—</span></div>
+          <div class="stat"><div class="sdot" style="background:#aaa"></div>⏱ <span class="sval" id="sTm">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+<script>
+// ── CONFIG ──────────────────────────────────────────
+// API_KEY убран — он хранится в Cloudflare Worker
+// ⚠️ ЗАМЕНИ на URL твоего Cloudflare Worker после деплоя
+const WORKER_URL = 'https://edugen.imaginatio-nnn.workers.dev/generate';
+
+// ── STATE ────────────────────────────────────────────
+let vc = 2, tc = 5;
+let files = [];
+let lastResult = null;
+let history = [];
+
+// ── COUNTERS ─────────────────────────────────────────
+function chg(f, d) {
+  if (f === 'v') { vc = Math.min(10, Math.max(1, vc + d)); document.getElementById('vVal').textContent = vc; }
+  else           { tc = Math.min(20, Math.max(1, tc + d)); document.getElementById('tVal').textContent = tc; }
+}
+
+// ── TASK TYPES ───────────────────────────────────────
+document.getElementById('tgrid').addEventListener('click', function(e) {
+  if (e.target.classList.contains('ttype')) e.target.classList.toggle('on');
+});
+function getTypes() {
+  return Array.from(document.querySelectorAll('.ttype.on')).map(function(b) { return b.dataset.t; });
+}
+
+// ── FILE UPLOAD ──────────────────────────────────────
+function dropFiles(e) {
+  e.preventDefault();
+  document.getElementById('upZone').classList.remove('drag');
+  addFiles(e.dataTransfer.files);
+}
+function addFiles(fl) {
+  Array.from(fl).forEach(function(f) {
+    if (!files.some(function(u) { return u.name === f.name; })) files.push(f);
+  });
+  renderFiles();
+}
+function renderFiles() {
+  document.getElementById('flist').innerHTML = files.map(function(f, i) {
+    var icon = /\.(png|jpg|jpeg|webp)$/i.test(f.name) ? '🖼' : f.name.endsWith('.pdf') ? '📑' : '📄';
+    return '<div class="fchip"><span>' + icon + '</span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + f.name + '</span><span class="rm" onclick="rmFile(' + i + ')">✕</span></div>';
+  }).join('');
+}
+function rmFile(i) { files.splice(i, 1); renderFiles(); }
+
+// Clean special chars from material text
+function cleanText(str) {
+  var result = '';
+  for (var i = 0; i < str.length; i++) {
+    var code = str.charCodeAt(i);
+    // Keep: printable ASCII (32-126), Cyrillic (1024-1279), common Latin extended, newline/tab
+    if ((code >= 32 && code <= 126) ||
+        (code >= 1024 && code <= 1279) ||
+        (code >= 192 && code <= 255) ||
+        code === 10 || code === 13 || code === 9) {
+      result += str[i];
+    } else {
+      result += ' ';
+    }
+  }
+  return result.replace(/\s+/g, ' ').trim();
+}
+
+async function readFiles() {
+  var out = [];
+  for (var i = 0; i < files.length; i++) {
+    var f = files[i];
+    if (/\.(png|jpg|jpeg|webp|gif)$/i.test(f.name)) {
+      out.push({ type: 'image', name: f.name });
+    } else {
+      try {
+        var text = await f.text();
+        out.push({ type: 'text', name: f.name, data: cleanText(text).slice(0, 4000) });
+      } catch(e) {
+        out.push({ type: 'text', name: f.name, data: '' });
+      }
+    }
+  }
+  return out;
+}
+
+// ── NEW WORK ─────────────────────────────────────────
+function newWork() {
+  document.getElementById('wTitle').value = '';
+  document.getElementById('topic').value  = '';
+  document.getElementById('extra').value  = '';
+  files = []; renderFiles(); lastResult = null;
+  setOut('<div class="empty-st"><div class="ico">📋</div><div class="ttl">Здесь появятся задания</div><div class="sub">Заполните параметры и нажмите «Сгенерировать задания»</div></div>');
+  document.getElementById('sbar').style.display = 'none';
+  document.getElementById('eWord').disabled = true;
+  document.getElementById('ePdf').disabled  = true;
+  document.getElementById('eAnswers').disabled = true;
+  document.getElementById('outTtl').textContent = 'Результат';
+  document.getElementById('topSub').textContent = 'Новая работа · EduGen';
+}
+
+// ── SAFE JSON PARSE ───────────────────────────────────
+function safeParseJSON(raw) {
+  // Remove markdown fences
+  raw = raw.replace(/```json/gi, '').replace(/```/g, '');
+  // Remove all non-printable and problematic unicode chars
+  var clean = '';
+  for (var i = 0; i < raw.length; i++) {
+    var code = raw.charCodeAt(i);
+    if (code === 9 || code === 10 || code === 13) { clean += raw[i]; continue; }
+    if (code >= 32 && code <= 126) { clean += raw[i]; continue; }
+    if (code >= 1024 && code <= 1279) { clean += raw[i]; continue; }
+    if (code >= 160 && code <= 255) { clean += raw[i]; continue; }
+    // Replace everything else with space
+    clean += ' ';
+  }
+  // Extract the outermost JSON object
+  var start = clean.indexOf('{');
+  var end = clean.lastIndexOf('}');
+  if (start === -1 || end === -1) throw new Error('JSON не найден в ответе');
+  clean = clean.slice(start, end + 1);
+  return JSON.parse(clean);
+}
+
+// ── GENERATE ─────────────────────────────────────────
+async function generate() {
+  var topic = document.getElementById('topic').value.trim();
+  var grade = document.getElementById('grade').value;
+  var diff  = document.getElementById('diff').value;
+  var extra = document.getElementById('extra').value.trim();
+  var types = getTypes();
+
+  // Auto-detect subject from topic
+  function detectSubject(t) {
+    t = t.toLowerCase();
+    if (/физик|механик|термодинам|электр|оптик|квант|ядер/.test(t)) return 'Физика';
+    if (/хим|реакц|элемент|валентн|моль|кислот|щелоч|орган|неорган|жир|белок|углевод|липид/.test(t)) return 'Химия';
+    if (/биол|клетк|днк|рнк|ген|эволюц|экосист|организм|фотосинт|митоз|мейоз|живот|растен|бактер/.test(t)) return 'Биология';
+    if (/матем|алгебр|геометр|тригоном|функц|уравнен|неравенств|логарифм|производн|интеграл/.test(t)) return 'Математика';
+    if (/истор|война|революц|империя|цивилизац|средневек|древн|политик|государств/.test(t)) return 'История';
+    if (/географ|климат|рельеф|океан|материк|страна|население|природн/.test(t)) return 'География';
+    if (/литерат|роман|поэм|автор|произведен|герой|сюжет/.test(t)) return 'Литература';
+    if (/русск|язык|орфограф|пунктуац|синтаксис|морфолог/.test(t)) return 'Русский язык';
+    if (/информат|программ|алгоритм|python|java|компьютер|сеть|база данн/.test(t)) return 'Информатика';
+    if (/англ|английск|english|grammar|tense|verb/.test(t)) return 'Английский язык';
+    if (/обществ|экономик|право|конституц|социол/.test(t)) return 'Обществознание';
+    return 'Контрольная работа';
+  }
+
+  var subject = detectSubject(topic);
+  var autoTitle = subject + ': ' + topic;
+  var title = document.getElementById('wTitle').value.trim() || autoTitle;
+
+  // Set title and subject in UI
+  if (!document.getElementById('wTitle').value.trim()) {
+    document.getElementById('wTitle').value = autoTitle;
+  }
+  document.getElementById('topSub').textContent = subject + ' · ' + grade + ' · ' + new Date().toLocaleDateString('ru-RU');
+
+  if (!topic) { showToast('Укажите тему задания', 'err'); document.getElementById('topic').focus(); return; }
+  if (!types.length) { showToast('Выберите тип заданий', 'err'); return; }
+
+  var btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="sp"></div> Генерируем...';
+  document.getElementById('sbar').style.display = 'none';
+  document.getElementById('eWord').disabled = true;
+  document.getElementById('ePdf').disabled  = true;
+  document.getElementById('eAnswers').disabled = true;
+
+  try {
+    var fd = await readFiles();
+    var materialText = fd
+      .filter(function(f) { return f.type === 'text' && f.data; })
+      .map(function(f) { return f.data; })
+      .join('\n')
+      .slice(0, 3500);
+
+    var imageCount = fd.filter(function(f) { return f.type === 'image'; }).length;
+
+    // Generate each variant separately
+    var variants = [];
+    var usedQs = [];
+    var timePerVariant = tc <= 5 ? '20 минут' : tc <= 10 ? '40 минут' : '60 минут';
+
+    for (var i = 1; i <= vc; i++) {
+      setOut('<div class="load-st"><div class="big-sp"></div><div class="load-txt">Генерирую вариант ' + i + ' из ' + vc + '...</div></div>');
+
+      var avoidNote = usedQs.length > 0
+        ? 'Не повторять эти вопросы: ' + usedQs.slice(-4).join('; ')
+        : '';
+
+      var matNote = materialText
+        ? 'Используй этот учебный материал:\n' + materialText
+        : '';
+
+      var imgNote = imageCount > 0
+        ? '(Пользователь загрузил ' + imageCount + ' изображений, создавай задания по теме)'
+        : '';
+
+      var gradeNote = (function(g) {
+        var map = {
+          '1 класс': 'Программа 1 класса РФ: счёт до 10/20, сложение и вычитание в пределах 20, буквы и слоги, простые тексты, окружающий мир. Задания строго соответствуют уровню.',
+          '2 класс': 'Программа 2 класса РФ: таблица умножения, деление, сотни, состав слова, части речи, текст и предложение, природа и сезоны.',
+          '3 класс': 'Программа 3 класса РФ: умножение и деление многозначных чисел, падежи, однородные члены, простые задачи на дроби, литературное чтение.',
+          '4 класс': 'Программа 4 класса РФ: действия с многозначными числами, именные части речи, синтаксис простого предложения, история России (начало), география (общие понятия).',
+          '5 класс': 'Программа 5 класса РФ: натуральные числа и дроби (математика), история Древнего мира, природные зоны (география), фонетика и морфология (русский язык), введение в биологию.',
+          '6 класс': 'Программа 6 класса РФ: обыкновенные дроби и проценты, история Средних веков, материки и океаны, глагол и синтаксис, ботаника и зоология.',
+          '7 класс': 'Программа 7 класса РФ: алгебра (уравнения, неравенства), геометрия (треугольники), физика (механика, давление), история Нового времени, зоология позвоночных.',
+          '8 класс': 'Программа 8 класса РФ: системы уравнений, квадратные уравнения, геометрия (четырёхугольники, площади), физика (тепловые явления, электричество), химия (основные классы соединений), история России XVIII-XIX вв.',
+          '9 класс': 'Программа 9 класса РФ: квадратичная функция, прогрессии, начала статистики, геометрия (тела вращения), физика (электромагнетизм, оптика), химия (органические соединения), биология (основы генетики), ОГЭ-уровень.',
+          '10 класс': 'Программа 10 класса РФ: алгебра и начала анализа (производная, тригонометрия), стереометрия, физика (динамика, молекулярная физика), химия (строение вещества, скорость реакций), биология (клетка, обмен веществ), история XX века.',
+          '11 класс': 'Программа 11 класса РФ: интеграл, вероятность и статистика, геометрия (объёмы тел), квантовая физика, органическая химия (углублённо), генетика и эволюция, ЕГЭ-уровень. Задания должны соответствовать формату и сложности ЕГЭ.',
+          'Колледж / СПО': 'Уровень СПО/колледжа: профессионально-ориентированные задачи, практическое применение знаний.',
+          'Вуз': 'Уровень высшей школы: академические задания, научный стиль, углублённое рассмотрение темы.'
+        };
+        return map[g] || '';
+      })(grade);
+
+      var prompt = 'Создай ОДИН вариант контрольной работы по теме "' + topic + '".\n' +
+        'Класс: ' + grade + '. Сложность: ' + diff + '.\n' +
+        (gradeNote ? 'Требования к уровню знаний: ' + gradeNote + '\n' : '') +
+        'Типы заданий (используй только их): ' + types.join(', ') + '.\n' +
+        'Количество заданий: ' + tc + '.\n' +
+        (extra ? 'Дополнительно: ' + extra + '\n' : '') +
+        matNote + '\n' +
+        imgNote + '\n' +
+        avoidNote + '\n\n' +
+        'Верни ТОЛЬКО JSON объект в таком формате (без какого-либо текста до или после):\n' +
+        '{"variantNumber":' + i + ',"tasks":[{"number":1,"type":"Тест (выбор ответа)","question":"текст вопроса","options":["A) вариант1","B) вариант2","C) вариант3","D) вариант4"],"answer":"A) вариант1","points":1}]}\n\n' +
+        'Правила: для тестов заполняй options с 4 вариантами. Для остальных типов "options":null.\n' +
+        'Только JSON, никакого другого текста!';
+
+      var idToken = await getFirebaseToken();
+      var resp = await fetch(WORKER_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + idToken
+        },
+        body: JSON.stringify({
+          messages: [
+            { role: 'system', content: 'You are a teacher. Always respond with valid JSON only. No text before or after the JSON object. No bullet points, no special symbols, no markdown.' },
+            { role: 'user', content: prompt }
+          ],
+          temperature: 0.6,
+          max_tokens: 3000
+        })
+      });
+
+      if (!resp.ok) {
+        var errData = await resp.json().catch(function() { return {}; });
+        throw new Error(errData.error && errData.error.message ? errData.error.message : 'HTTP ' + resp.status);
+      }
+
+      var data = await resp.json();
+      var raw = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content
+        ? data.choices[0].message.content : '';
+
+      if (!raw) throw new Error('Пустой ответ от API для варианта ' + i);
+
+      var v = safeParseJSON(raw);
+      v.variantNumber = i;
+      if (!v.tasks || !v.tasks.length) throw new Error('Вариант ' + i + ': задания не сгенерированы');
+
+      v.tasks.forEach(function(t) {
+        if (t.question) usedQs.push(t.question.slice(0, 50));
+      });
+      variants.push(v);
+    }
+
+    var parsed = {
+      topic: topic,
+      grade: grade,
+      difficulty: diff,
+      estimatedTimePerVariant: timePerVariant,
+      variants: variants
+    };
+
+    lastResult = parsed;
+    renderResult(parsed);
+
+    history.unshift({ title: title, topic: topic, date: new Date().toLocaleDateString('ru-RU'), result: parsed });
+    renderHistory();
+
+    document.getElementById('outTtl').textContent = title;
+    document.getElementById('topSub').textContent = topic + ' · ' + grade + ' · ' + new Date().toLocaleDateString('ru-RU');
+
+    var tot = parsed.variants.reduce(function(s, v) { return s + v.tasks.length; }, 0);
+    document.getElementById('sV').textContent  = parsed.variants.length;
+    document.getElementById('sT').textContent  = tot;
+    document.getElementById('sTm').textContent = parsed.estimatedTimePerVariant || '—';
+    document.getElementById('sbar').style.display = 'flex';
+    document.getElementById('eWord').disabled = false;
+    document.getElementById('ePdf').disabled  = false;
+    document.getElementById('eAnswers').disabled = false;
+    showToast('Готово! ✓', 'ok');
+
+  } catch (err) {
+    setOut('<div class="empty-st"><div class="ico">⚠️</div><div class="ttl">Ошибка</div><div class="sub">' + err.message + '</div></div>');
+    showToast(err.message, 'err');
+    console.error('[EduGen]', err);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>✨</span> Сгенерировать задания';
+  }
+}
+
+// ── RENDER RESULT ─────────────────────────────────────
+function renderResult(d) {
+  setOut(d.variants.map(function(v, vi) {
+    return '<div class="vcard" style="animation-delay:' + (vi * 0.06) + 's">' +
+      '<div class="vcard-head">' +
+        '<div class="vbadge">Вариант ' + v.variantNumber + '</div>' +
+        '<div class="vmeta">' + d.topic + ' · ' + d.grade + '</div>' +
+        '<div class="vtime">&#9201; ' + d.estimatedTimePerVariant + '</div>' +
+      '</div>' +
+      '<div class="vbody">' +
+        v.tasks.map(function(t, ti) {
+          var opts = t.options ? t.options.map(function(o) { return '<div class="ti-opt">' + o + '</div>'; }).join('') : '';
+          var hasOptions = t.options && t.options.length;
+          var answerLine = !hasOptions
+            ? '<div class="ti-ans-line">Ответ: ________________________________________________</div>'
+            : '';
+          return '<div class="ti">' +
+            '<div class="ti-num" style="display:flex;align-items:center;justify-content:space-between">' +
+              '<span>Задание ' + t.number + ' &middot; ' + t.type + ' &middot; ' + t.points + ' б.</span>' +
+              '<button class="regen-btn" onclick="regenTask(' + vi + ',' + ti + ')" title="Перегенерировать задание">&#8635;</button>' +
+            '</div>' +
+            '<div class="ti-q">' + t.question + '</div>' +
+            opts +
+            answerLine +
+          '</div>';
+        }).join('') +
+      '</div>' +
+    '</div>';
+  }).join(''));
+}
+
+function setOut(h) { document.getElementById('outScroll').innerHTML = h; }
+
+// ── HISTORY ──────────────────────────────────────────
+function renderHistory() {
+  var el = document.getElementById('hist');
+  if (!history.length) { el.innerHTML = '<div class="hist-empty">Пока нет работ</div>'; return; }
+  el.innerHTML = history.map(function(h, i) {
+    return '<div class="hist-item' + (i === 0 ? ' on' : '') + '" onclick="loadHist(' + i + ')">' +
+      '<div style="font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + h.title + '</div>' +
+      '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + h.date + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function loadHist(i) {
+  var h = history[i];
+  if (!h || !h.result) return;
+  lastResult = h.result;
+  renderResult(h.result);
+  document.getElementById('outTtl').textContent = h.title;
+  document.getElementById('eWord').disabled = false;
+  document.getElementById('ePdf').disabled  = false;
+  document.getElementById('eAnswers').disabled = false;
+  var tot = h.result.variants.reduce(function(s, v) { return s + v.tasks.length; }, 0);
+  document.getElementById('sV').textContent  = h.result.variants.length;
+  document.getElementById('sT').textContent  = tot;
+  document.getElementById('sTm').textContent = h.result.estimatedTimePerVariant || '—';
+  document.getElementById('sbar').style.display = 'flex';
+  document.querySelectorAll('.hist-item').forEach(function(el, j) { el.classList.toggle('on', j === i); });
+}
+
+// ── EXPORT ANSWERS (отдельный файл ответов) ───────────
+function exportAnswers() {
+  if (!lastResult) return;
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ответы — ' + lastResult.topic + '</title>' +
+  '<style>' +
+  'body{font-family:Georgia,serif;max-width:700px;margin:0 auto;padding:40px;color:#111}' +
+  'h1{font-size:22px;border-bottom:3px solid #2d5a27;padding-bottom:10px;color:#2d5a27;margin-bottom:6px}' +
+  '.meta{color:#666;font-size:13px;margin-bottom:28px}' +
+  '.vh{background:#2d5a27;color:#fff;padding:10px 18px;border-radius:6px;margin:24px 0 12px;font-weight:bold;font-size:16px}' +
+  '.row{display:flex;justify-content:space-between;align-items:baseline;padding:8px 0;border-bottom:1px solid #eee;font-size:14px}' +
+  '.row:last-child{border-bottom:none}' +
+  '.num{color:#999;font-size:12px;font-family:monospace;min-width:90px}' +
+  '.ans{font-weight:600;color:#2d5a27}' +
+  '.pts{font-size:12px;color:#999;font-family:monospace}' +
+  '@media print{.vh{-webkit-print-color-adjust:exact;print-color-adjust:exact}}' +
+  '</style></head><body>' +
+  '<h1>🗝 Ответы: ' + lastResult.topic + '</h1>' +
+  '<div class="meta">' + lastResult.grade + ' &nbsp;·&nbsp; ' + lastResult.difficulty + ' &nbsp;·&nbsp; ' + lastResult.estimatedTimePerVariant + '</div>';
+
+  lastResult.variants.forEach(function(v) {
+    html += '<div class="vh">ВАРИАНТ ' + v.variantNumber + '</div>';
+    v.tasks.forEach(function(t) {
+      html += '<div class="row">' +
+        '<span class="num">Задание ' + t.number + '</span>' +
+        '<span class="ans">' + t.answer + '</span>' +
+        '<span class="pts">' + t.points + ' балл.</span>' +
+      '</div>';
+    });
+  });
+
+  html += '</body></html>';
+
+  var w = window.open('', '_blank');
+  if (!w) { showToast('Разрешите всплывающие окна', 'err'); return; }
+  w.document.write(html);
+  w.document.close();
+  setTimeout(function() { w.print(); }, 500);
+  showToast('Файл ответов открыт', 'ok');
+}
+
+// ── EXPORT WORD ───────────────────────────────────────
+function exportWord() {
+  if (!lastResult) return;
+  var html = '<!DOCTYPE html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+  '<head><meta charset="UTF-8">' +
+  '<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>90</w:Zoom></w:WordDocument></xml><![endif]-->' +
+  '<style>' +
+  'body{font-family:"Times New Roman",Times,serif;font-size:12pt;max-width:700px;margin:0 auto;padding:30px;color:#111;line-height:1.6}' +
+  'h1{font-family:"Times New Roman",Times,serif;font-size:16pt;font-weight:bold;border-bottom:2px solid #2d5a27;padding-bottom:8px;color:#2d5a27;margin-bottom:5px}' +
+  '.meta{color:#666;font-size:10pt;margin-bottom:24px}' +
+  '.vh{font-family:"Times New Roman",Times,serif;font-size:13pt;font-weight:bold;border-top:2px solid #2d5a27;border-bottom:1px solid #2d5a27;padding:6px 0;margin:24px 0 14px;color:#2d5a27}' +
+  '.task{margin-bottom:18px;padding-bottom:14px;border-bottom:1px dotted #ccc}' +
+  '.task:last-child{border-bottom:none}' +
+  '.tn{font-size:9pt;font-weight:bold;text-transform:uppercase;color:#2d5a27;margin-bottom:4px;font-family:"Times New Roman",Times,serif}' +
+  '.tq{font-size:12pt;line-height:1.7;margin-bottom:6px;font-family:"Times New Roman",Times,serif}' +
+  '.to{font-size:11pt;padding-left:16px;margin-bottom:2px;font-family:"Times New Roman",Times,serif}' +
+  '.ans-line{font-size:11pt;color:#888;margin-top:10px;font-family:"Times New Roman",Times,serif}' +
+  '</style></head><body>' +
+  '<h1>EduGen — ' + lastResult.topic + '</h1>' +
+  '<div class="meta">' + lastResult.grade + ' &nbsp;&middot;&nbsp; ' + lastResult.difficulty + ' &nbsp;&middot;&nbsp; Время: ' + lastResult.estimatedTimePerVariant + '</div>';
+
+  lastResult.variants.forEach(function(v) {
+    html += '<div class="vh">ВАРИАНТ ' + v.variantNumber + '</div>';
+    v.tasks.forEach(function(t) {
+      var opts = (t.options || []).map(function(o) { return '<div class="to">' + o + '</div>'; }).join('');
+      var hasOptions = t.options && t.options.length;
+      var answerLine = !hasOptions ? '<div class="ans-line">Ответ: _______________________________________________________</div>' : '';
+      html += '<div class="task">' +
+        '<div class="tn">Задание ' + t.number + ' &mdash; ' + t.type + ' (' + t.points + ' балл.)</div>' +
+        '<div class="tq">' + t.question + '</div>' +
+        opts +
+        answerLine +
+      '</div>';
+    });
+  });
+
+  html += '</body></html>';
+  dl(new Blob([html], { type: 'application/msword;charset=utf-8' }),
+     'EduGen_' + lastResult.topic.slice(0, 25).replace(/\s+/g, '_') + '.doc');
+  showToast('Word скачан', 'ok');
+}
+
+// ── EXPORT PDF ────────────────────────────────────────
+function exportPdf() {
+  if (!lastResult) return;
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>' + lastResult.topic + '</title>' +
+  '<style>' +
+  'body{font-family:Georgia,serif;max-width:780px;margin:0 auto;padding:40px;color:#111}' +
+  'h1{font-size:24px;border-bottom:3px solid #2d5a27;padding-bottom:10px;color:#2d5a27;margin-bottom:6px}' +
+  '.meta{color:#666;font-size:13px;margin-bottom:28px}' +
+  '.vh{background:#2d5a27;color:#fff;padding:10px 18px;border-radius:6px;margin:28px 0 16px;display:flex;justify-content:space-between;align-items:center}' +
+  '.vb{font-size:16px;font-weight:bold}.vt{font-size:12px;opacity:.8}' +
+  '.task{margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid #eee}' +
+  '.task:last-child{border-bottom:none}' +
+  '.tn{font-size:11px;color:#2d5a27;font-weight:bold;text-transform:uppercase;margin-bottom:5px}' +
+  '.tq{font-size:14px;line-height:1.7;margin-bottom:7px}' +
+  '.to{font-size:13px;color:#444;padding-left:14px;margin-bottom:3px}' +
+  '.ans-line{font-size:13px;color:#999;margin-top:10px;font-family:monospace;letter-spacing:1px}' +
+  '@media print{.vh{-webkit-print-color-adjust:exact;print-color-adjust:exact}}' +
+  '</style></head><body>' +
+  '<h1>Задания: ' + lastResult.topic + '</h1>' +
+  '<div class="meta">' + lastResult.grade + ' &nbsp;&middot;&nbsp; ' + lastResult.difficulty + ' &nbsp;&middot;&nbsp; ' + lastResult.estimatedTimePerVariant + '</div>';
+
+  lastResult.variants.forEach(function(v) {
+    html += '<div class="vh"><span class="vb">ВАРИАНТ ' + v.variantNumber + '</span><span class="vt">' + lastResult.estimatedTimePerVariant + '</span></div>';
+    v.tasks.forEach(function(t) {
+      var opts = (t.options || []).map(function(o) { return '<div class="to">' + o + '</div>'; }).join('');
+      var hasOptions = t.options && t.options.length;
+      var answerLine = !hasOptions ? '<div class="ans-line">Ответ: ________________________________________________</div>' : '';
+      html += '<div class="task">' +
+        '<div class="tn">Задание ' + t.number + ' &middot; ' + t.type + ' &middot; ' + t.points + ' балл.</div>' +
+        '<div class="tq">' + t.question + '</div>' +
+        opts +
+        answerLine +
+      '</div>';
+    });
+  });
+
+  html += '</body></html>';
+  var w = window.open('', '_blank');
+  if (!w) { showToast('Разрешите всплывающие окна', 'err'); return; }
+  w.document.write(html);
+  w.document.close();
+  w.onload = function() { w.print(); };
+  showToast('Откройте «Файл → Печать» → Сохранить PDF', 'info');
+}
+
+// ── REGEN SINGLE TASK ────────────────────────────────
+async function regenTask(variantIdx, taskIdx) {
+  if (!lastResult) return;
+  var v = lastResult.variants[variantIdx];
+  var oldTask = v.tasks[taskIdx];
+  var grade = lastResult.grade;
+  var topic = lastResult.topic;
+  var diff = lastResult.difficulty;
+
+  // Find the regen button and animate it
+  var cards = document.querySelectorAll('.vcard');
+  var taskEls = cards[variantIdx] ? cards[variantIdx].querySelectorAll('.ti') : [];
+  var taskEl = taskEls[taskIdx];
+  var btn = taskEl ? taskEl.querySelector('.regen-btn') : null;
+  if (btn) { btn.classList.add('spinning'); btn.disabled = true; }
+
+  try {
+    var prompt = 'Создай ОДНО новое задание типа "' + oldTask.type + '" по теме "' + topic + '".\n' +
+      'Класс: ' + grade + '. Сложность: ' + diff + '.\n' +
+      'Не повторять этот вопрос: ' + oldTask.question.slice(0, 80) + '\n' +
+      'Верни ТОЛЬКО JSON объект:\n' +
+      '{"number":' + oldTask.number + ',"type":"' + oldTask.type + '","question":"текст","options":' +
+        (oldTask.type === 'Тест (выбор ответа)' ? '["A) вариант1","B) вариант2","C) вариант3","D) вариант4"]' : 'null') +
+        ',"answer":"ответ","points":' + oldTask.points + '}\n' +
+      'Только JSON, никакого другого текста!';
+
+    var idToken = await getFirebaseToken();
+    var resp = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken },
+      body: JSON.stringify({
+        messages: [
+          { role: 'system', content: 'You are a teacher. Always respond with valid JSON only. No text before or after the JSON object.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.8,
+        max_tokens: 800
+      })
+    });
+
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+    var raw = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content ? data.choices[0].message.content : '';
+    if (!raw) throw new Error('Пустой ответ');
+    var newTask = safeParseJSON(raw);
+    newTask.number = oldTask.number;
+    newTask.points = oldTask.points;
+    lastResult.variants[variantIdx].tasks[taskIdx] = newTask;
+    renderResult(lastResult);
+    showToast('Задание ' + oldTask.number + ' обновлено ✓', 'ok');
+  } catch(err) {
+    if (btn) { btn.classList.remove('spinning'); btn.disabled = false; }
+    showToast('Ошибка: ' + err.message, 'err');
+  }
+}
+
+// ── HELPERS ───────────────────────────────────────────
+function dl(blob, name) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+var toastTimer;
+function showToast(msg, type) {
+  type = type || 'info';
+  var el = document.getElementById('toast');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { el.classList.remove('show'); }, 3500);
+}
+</script>
+
+<!-- Firebase Auth guard -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+
+// ⚠️ ЗАМЕНИ на те же значения что и в index.html
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDWoeMDdjr6bAeUrenZ5TzgNh8GBAqjsqI",
+  authDomain: "edugen-9108a.firebaseapp.com",
+  projectId: "edugen-9108a",
+  storageBucket: "edugen-9108a.firebasestorage.app",
+  messagingSenderId: "503357109913",
+  appId: "1:503357109913:web:716dd637e8903220e02a08",
+  measurementId: "G-FCYCC2PRMF"
+};
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+// Защита страницы: если не залогинен — на index.html
+onAuthStateChanged(auth, function(user) {
+  if (!user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  // Показываем данные пользователя
+  var phone = user.phoneNumber || '';
+  var email = user.email || '';
+  var initial = phone ? phone.slice(-2) : (email ? email[0].toUpperCase() : '?');
+  document.getElementById('userInitial').textContent = initial;
+  document.getElementById('userPhone').textContent   = phone || 'Нет телефона';
+  document.getElementById('userEmail').textContent   = email || 'Email не привязан';
+
+  sessionStorage.setItem('edugen_authed', '1');
+});
+
+// Глобальная функция выхода
+window.doLogout = async function() {
+  if (!confirm('Выйти из аккаунта?')) return;
+  await signOut(auth);
+  sessionStorage.removeItem('edugen_authed');
+  window.location.href = 'index.html';
+};
+
+// Получить свежий токен для запросов к Worker
+window.getFirebaseToken = async function() {
+  var user = auth.currentUser;
+  if (!user) throw new Error('Не авторизован');
+  return await user.getIdToken();
+};
+</script>
+</body>
+</html></html>
