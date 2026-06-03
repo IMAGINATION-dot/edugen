@@ -25,62 +25,37 @@ body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--t
 .logo-name span { color: var(--text3); font-weight: 400; }
 
 h2 { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-.sub { font-size: 13px; color: var(--text2); margin-bottom: 28px; line-height: 1.5; }
+.sub { font-size: 13px; color: var(--text2); margin-bottom: 32px; line-height: 1.5; }
 
-/* Steps */
-.step { display: none; }
-.step.active { display: block; }
-
-label { font-size: 13px; font-weight: 700; color: var(--text); display: block; margin-bottom: 7px; }
-.hint { font-size: 12px; color: var(--text3); margin-top: 4px; font-family: 'IBM Plex Mono', monospace; }
-
-.inp-wrap { position: relative; }
-.inp-prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--text2); pointer-events: none; font-family: 'Manrope', sans-serif; }
-
-input[type=tel], input[type=email], input[type=text] {
-  width: 100%; background: var(--inp); border: 2px solid transparent; border-radius: var(--r);
-  font-family: 'Manrope', sans-serif; font-size: 15px; color: var(--text);
-  padding: 13px 15px; outline: none; transition: all .2s;
-  margin-bottom: 4px;
+.btn-google {
+  width: 100%; padding: 14px 20px;
+  background: #fff; color: #3c3c3c;
+  border: 2px solid var(--border);
+  border-radius: var(--r);
+  font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+  display: flex; align-items: center; justify-content: center; gap: 12px;
+  margin-top: 8px;
 }
-input[type=tel] { padding-left: 48px; letter-spacing: 1px; }
-input[type=tel]:focus, input[type=email]:focus, input[type=text]:focus {
-  background: #dcdcd8; border-color: var(--green);
+.btn-google:hover:not(:disabled) {
+  border-color: #aaa; background: #f8f8f8;
+  box-shadow: 0 4px 16px rgba(0,0,0,.1);
+  transform: translateY(-1px);
 }
-input.err { border-color: var(--err) !important; background: #fdf2f2; }
+.btn-google:disabled { opacity: .5; cursor: not-allowed; }
 
-.otp-row { display: flex; gap: 8px; margin-bottom: 4px; }
-.otp-row input {
-  flex: 1; text-align: center; font-size: 22px; font-weight: 700;
-  padding: 12px 4px; font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: 0;
-}
+.btn-google svg { flex-shrink: 0; }
 
-.btn { width: 100%; padding: 14px; background: var(--green); color: #fff; border: none; border-radius: var(--r); font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; }
-.btn:hover:not(:disabled) { background: var(--green2); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(45,90,39,.25); }
-.btn:disabled { opacity: .5; cursor: not-allowed; transform: none; box-shadow: none; }
-.btn-ghost { background: transparent; color: var(--green); border: 2px solid var(--border); margin-top: 10px; }
-.btn-ghost:hover:not(:disabled) { background: rgba(45,90,39,.06); border-color: var(--green); transform: none; box-shadow: none; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 24px 0; color: var(--text3); font-size: 12px; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-.sp { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
+.sp { width: 18px; height: 18px; border: 2px solid rgba(60,60,60,.2); border-top-color: #3c3c3c; border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.err-msg { font-size: 13px; color: var(--err); margin-top: 8px; display: none; background: #fdf2f2; border-radius: 9px; padding: 9px 13px; }
+.err-msg { font-size: 13px; color: var(--err); margin-top: 16px; display: none; background: #fdf2f2; border-radius: 9px; padding: 9px 13px; }
 .err-msg.show { display: block; }
 
-.timer { font-size: 12px; color: var(--text3); font-family: 'IBM Plex Mono', monospace; margin-top: 10px; text-align: center; }
-.timer a { color: var(--green); cursor: pointer; text-decoration: underline; }
-
-.back { font-size: 13px; color: var(--text3); cursor: pointer; display: inline-flex; align-items: center; gap: 5px; margin-bottom: 18px; transition: color .15s; }
-.back:hover { color: var(--text); }
-
-.notice { background: #f0f8f0; border: 1px solid #b8ddb8; border-radius: 10px; padding: 12px 14px; font-size: 13px; color: #2d5a27; line-height: 1.6; margin-bottom: 20px; }
-.notice strong { display: block; margin-bottom: 3px; }
-
-/* recaptcha badge stays bottom-right, just make it less intrusive */
-.grecaptcha-badge { opacity: .4; }
-
-#recaptcha-container { margin-top: 8px; }
+.note { font-size: 12px; color: var(--text3); text-align: center; margin-top: 20px; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -96,350 +71,63 @@ input.err { border-color: var(--err) !important; background: #fdf2f2; }
     <div class="logo-name">Edu<span>Gen</span></div>
   </div>
 
-  <!-- ── ШАГ 1: Ввод телефона ── -->
-  <div class="step active" id="step1">
-    <h2>Войти в EduGen</h2>
-    <p class="sub">Введите номер телефона — отправим код подтверждения по SMS.</p>
+  <h2>Войти в EduGen</h2>
+  <p class="sub">Используйте аккаунт Google для быстрого и безопасного входа.</p>
 
-    <label for="phoneInput">Номер телефона</label>
-    <div class="inp-wrap">
-      <span class="inp-prefix">+7</span>
-      <input type="tel" id="phoneInput" placeholder="900 123 45 67" maxlength="14"
-        oninput="formatPhone(this)" onkeydown="if(event.key==='Enter') sendCode()"/>
-    </div>
-    <div class="hint">Виртуальные и одноразовые номера не принимаются</div>
-    <div class="err-msg" id="err1"></div>
+  <button class="btn-google" id="btnGoogle" onclick="signInWithGoogle()">
+    <svg width="20" height="20" viewBox="0 0 48 48">
+      <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+      <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+      <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+      <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+    </svg>
+    Войти через Google
+  </button>
 
-    <div id="recaptcha-container"></div>
+  <div class="err-msg" id="errMsg"></div>
 
-    <button class="btn" id="btnSend" onclick="sendCode()">
-      Получить SMS-код
-    </button>
-  </div>
-
-  <!-- ── ШАГ 2: Ввод OTP ── -->
-  <div class="step" id="step2">
-    <span class="back" onclick="goBack(1)">← Назад</span>
-    <h2>Введите код</h2>
-    <p class="sub" id="step2sub">Код отправлен на номер <strong id="phoneLbl"></strong></p>
-
-    <div class="otp-row" id="otpRow">
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,0)"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,1)"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,2)"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,3)"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,4)"/>
-      <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" oninput="otpInput(this,5)"/>
-    </div>
-    <div class="err-msg" id="err2"></div>
-
-    <div class="timer" id="timerBlock">
-      Повторная отправка через <span id="timerSec">60</span> сек.
-    </div>
-    <div class="timer" id="resendBlock" style="display:none">
-      <a onclick="resendCode()">Отправить код повторно</a>
-    </div>
-
-    <button class="btn" id="btnVerify" onclick="verifyCode()">
-      Подтвердить
-    </button>
-  </div>
-
-  <!-- ── ШАГ 3: Email (при первом входе) ── -->
-  <div class="step" id="step3">
-    <h2>Добавьте email</h2>
-    <div class="notice">
-      <strong>Зачем?</strong>
-      Email нужен для восстановления доступа, если потеряете телефон.
-      На него придёт письмо — нужно нажать ссылку для подтверждения.
-    </div>
-
-    <label for="emailInput">Ваш email</label>
-    <input type="email" id="emailInput" placeholder="teacher@school.ru"
-      onkeydown="if(event.key==='Enter') linkEmail()"/>
-    <div class="err-msg" id="err3"></div>
-
-    <button class="btn" id="btnEmail" onclick="linkEmail()">Привязать и подтвердить</button>
-    <button class="btn btn-ghost" onclick="skipEmail()">Пропустить пока</button>
-  </div>
-
-  <!-- ── ШАГ 4: Письмо отправлено ── -->
-  <div class="step" id="step4">
-    <h2>Проверьте почту ✉️</h2>
-    <p class="sub">Мы отправили письмо с ссылкой подтверждения на <strong id="emailSentTo"></strong>.<br><br>
-    Перейдите по ссылке в письме, затем нажмите кнопку ниже.</p>
-    <button class="btn" onclick="continueToApp()">Я подтвердил — продолжить</button>
-    <button class="btn btn-ghost" id="btnResendEmail" onclick="resendVerification()">Отправить письмо снова</button>
-  </div>
-
+  <p class="note">Нажимая «Войти», вы соглашаетесь с условиями использования EduGen.</p>
 </div>
 
-<!-- Firebase SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, linkWithCredential, EmailAuthProvider, sendEmailVerification }
+import { getAuth, GoogleAuthProvider, signInWithPopup }
   from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
 
-// ══════════════════════════════════════════════════
-//  ⚠️  ЗАМЕНИ ЭТИ ЗНАЧЕНИЯ на свои из Firebase Console
-//  (Настройки проекта → Ваши приложения → Конфиг)
-// ══════════════════════════════════════════════════
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDWoeMDdjr6bAeUrenZ5TzgNh8GBAqjsqI",
   authDomain: "edugen-9108a.firebaseapp.com",
   projectId: "edugen-9108a",
   storageBucket: "edugen-9108a.firebasestorage.app",
   messagingSenderId: "503357109913",
-  appId: "1:503357109913:web:716dd637e8903220e02a08",
-  measurementId: "G-FCYCC2PRMF"
+  appId: "1:503357109913:web:716dd637e8903220e02a08"
 };
 
-const app  = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-auth.languageCode = 'ru';
+const provider = new GoogleAuthProvider();
 
-let confirmationResult = null;
-let timerInterval = null;
+window.signInWithGoogle = async function() {
+  const btn = document.getElementById('btnGoogle');
+  const errEl = document.getElementById('errMsg');
+  errEl.classList.remove('show');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="sp"></div> Входим...';
 
-// Делаем функции глобальными (вызываются из onclick в HTML)
-window.sendCode      = sendCode;
-window.verifyCode    = verifyCode;
-window.resendCode    = resendCode;
-window.linkEmail     = linkEmail;
-window.skipEmail     = skipEmail;
-window.continueToApp = continueToApp;
-window.resendVerification = resendVerification;
-window.goBack        = goBack;
-window.formatPhone   = formatPhone;
-window.otpInput      = otpInput;
-
-// ── При загрузке: если уже залогинен → в app ───────
-auth.onAuthStateChanged(function(user) {
-  if (user && sessionStorage.getItem('edugen_authed')) {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    sessionStorage.setItem('edugen_authed', '1');
     window.location.href = 'app.html';
-  }
-});
-
-// ── Форматирование номера ───────────────────────────
-function formatPhone(inp) {
-  var v = inp.value.replace(/\D/g, '').slice(0, 10);
-  inp.value = v;
-}
-
-// ── Шаг 1: Отправить SMS ───────────────────────────
-async function sendCode() {
-  var raw = document.getElementById('phoneInput').value.replace(/\D/g, '');
-  if (raw.length < 10) { showErr('err1', 'Введите полный номер телефона (10 цифр без +7)'); return; }
-  var phone = '+7' + raw;
-
-  clearErr('err1');
-  setLoading('btnSend', true, 'Отправляем...');
-
-  try {
-    // Инициализируем reCAPTCHA (невидимая)
-    if (!window.recaptchaVerifier) {
-      window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-        size: 'invisible',
-        callback: function() {}
-      });
-    }
-
-    confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
-    document.getElementById('phoneLbl').textContent = phone;
-    showStep(2);
-    startTimer(60);
-    document.querySelector('#otpRow input').focus();
-
   } catch(e) {
     console.error(e);
-    var msg = translateError(e.code);
-    showErr('err1', msg);
-    // Сбрасываем reCAPTCHA при ошибке
-    if (window.recaptchaVerifier) {
-      window.recaptchaVerifier.clear();
-      window.recaptchaVerifier = null;
-    }
-  } finally {
-    setLoading('btnSend', false, 'Получить SMS-код');
+    let msg = 'Ошибка входа. Попробуйте снова.';
+    if (e.code === 'auth/popup-closed-by-user') msg = 'Окно входа было закрыто. Попробуйте снова.';
+    if (e.code === 'auth/network-request-failed') msg = 'Проблема с интернетом.';
+    errEl.textContent = msg;
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = `<svg width="20" height="20" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg> Войти через Google`;
   }
-}
-
-// ── Шаг 2: OTP навигация ───────────────────────────
-function otpInput(el, idx) {
-  // Разрешаем только цифры
-  el.value = el.value.replace(/\D/g, '');
-  if (el.value && idx < 5) {
-    document.querySelectorAll('#otpRow input')[idx + 1].focus();
-  }
-  // Если все 6 цифр введены — автоверификация
-  var all = Array.from(document.querySelectorAll('#otpRow input')).map(function(i) { return i.value; }).join('');
-  if (all.length === 6) verifyCode();
-}
-
-// ── Шаг 2: Проверить код ───────────────────────────
-async function verifyCode() {
-  var code = Array.from(document.querySelectorAll('#otpRow input')).map(function(i) { return i.value; }).join('');
-  if (code.length < 6) { showErr('err2', 'Введите все 6 цифр кода'); return; }
-  if (!confirmationResult) { showErr('err2', 'Сначала запросите код'); return; }
-
-  clearErr('err2');
-  setLoading('btnVerify', true, 'Проверяем...');
-
-  try {
-    var result = await confirmationResult.confirm(code);
-    var user = result.user;
-
-    // Новый пользователь (нет email) → шаг 3
-    if (!user.email) {
-      showStep(3);
-    } else if (!user.emailVerified) {
-      document.getElementById('emailSentTo').textContent = user.email;
-      showStep(4);
-    } else {
-      // Всё ок — в приложение
-      sessionStorage.setItem('edugen_authed', '1');
-      window.location.href = 'app.html';
-    }
-
-  } catch(e) {
-    console.error(e);
-    showErr('err2', translateError(e.code));
-    // Подсвечиваем поля
-    document.querySelectorAll('#otpRow input').forEach(function(i) { i.classList.add('err'); });
-  } finally {
-    setLoading('btnVerify', false, 'Подтвердить');
-  }
-}
-
-// ── Шаг 3: Привязать email ─────────────────────────
-async function linkEmail() {
-  var email = document.getElementById('emailInput').value.trim();
-  if (!email || !email.includes('@')) { showErr('err3', 'Введите корректный email'); return; }
-
-  clearErr('err3');
-  setLoading('btnEmail', true, 'Отправляем...');
-
-  try {
-    var user = auth.currentUser;
-    // Привязываем email без пароля — только для восстановления
-    // (используем updateEmail + sendEmailVerification)
-    await user.updateEmail(email);
-    await sendEmailVerification(user, {
-      url: window.location.origin + '/app.html'
-    });
-    document.getElementById('emailSentTo').textContent = email;
-    showStep(4);
-  } catch(e) {
-    console.error(e);
-    showErr('err3', translateError(e.code));
-  } finally {
-    setLoading('btnEmail', false, 'Привязать и подтвердить');
-  }
-}
-
-function skipEmail() {
-  sessionStorage.setItem('edugen_authed', '1');
-  window.location.href = 'app.html';
-}
-
-async function continueToApp() {
-  await auth.currentUser?.reload();
-  sessionStorage.setItem('edugen_authed', '1');
-  window.location.href = 'app.html';
-}
-
-async function resendVerification() {
-  try {
-    await sendEmailVerification(auth.currentUser, { url: window.location.origin + '/app.html' });
-    showToastLocal('Письмо отправлено повторно');
-    document.getElementById('btnResendEmail').disabled = true;
-    setTimeout(function() { document.getElementById('btnResendEmail').disabled = false; }, 30000);
-  } catch(e) {
-    showToastLocal(translateError(e.code));
-  }
-}
-
-// ── Повторная отправка SMS ─────────────────────────
-async function resendCode() {
-  document.querySelectorAll('#otpRow input').forEach(function(i) { i.value = ''; i.classList.remove('err'); });
-  clearErr('err2');
-  if (window.recaptchaVerifier) { window.recaptchaVerifier.clear(); window.recaptchaVerifier = null; }
-  document.getElementById('resendBlock').style.display = 'none';
-  document.getElementById('timerBlock').style.display = 'block';
-  goBack(1);
-  await sendCode();
-}
-
-// ── Навигация ──────────────────────────────────────
-function goBack(toStep) {
-  showStep(toStep);
-  if (timerInterval) clearInterval(timerInterval);
-}
-
-function showStep(n) {
-  document.querySelectorAll('.step').forEach(function(s, i) {
-    s.classList.toggle('active', i === n - 1);
-  });
-}
-
-// ── Таймер повторной отправки ──────────────────────
-function startTimer(sec) {
-  document.getElementById('timerBlock').style.display = 'block';
-  document.getElementById('resendBlock').style.display = 'none';
-  document.getElementById('timerSec').textContent = sec;
-  if (timerInterval) clearInterval(timerInterval);
-  timerInterval = setInterval(function() {
-    sec--;
-    document.getElementById('timerSec').textContent = sec;
-    if (sec <= 0) {
-      clearInterval(timerInterval);
-      document.getElementById('timerBlock').style.display = 'none';
-      document.getElementById('resendBlock').style.display = 'block';
-    }
-  }, 1000);
-}
-
-// ── Хелперы ────────────────────────────────────────
-function setLoading(btnId, loading, label) {
-  var btn = document.getElementById(btnId);
-  btn.disabled = loading;
-  btn.innerHTML = loading
-    ? '<div class="sp"></div> ' + label
-    : label;
-}
-
-function showErr(id, msg) {
-  var el = document.getElementById(id);
-  el.textContent = msg;
-  el.classList.add('show');
-}
-function clearErr(id) {
-  var el = document.getElementById(id);
-  el.textContent = '';
-  el.classList.remove('show');
-  document.querySelectorAll('#otpRow input').forEach(function(i) { i.classList.remove('err'); });
-}
-
-function showToastLocal(msg) {
-  // простой алерт как fallback
-  alert(msg);
-}
-
-function translateError(code) {
-  var map = {
-    'auth/invalid-phone-number':        'Неверный формат номера телефона',
-    'auth/too-many-requests':           'Слишком много попыток. Попробуйте позже.',
-    'auth/invalid-verification-code':   'Неверный код. Проверьте SMS и попробуйте снова.',
-    'auth/code-expired':                'Код истёк. Запросите новый.',
-    'auth/session-expired':             'Сессия истекла. Запросите новый код.',
-    'auth/email-already-in-use':        'Этот email уже привязан к другому аккаунту.',
-    'auth/invalid-email':               'Неверный формат email.',
-    'auth/network-request-failed':      'Проблема с интернетом. Проверьте соединение.',
-    'auth/quota-exceeded':              'Превышен лимит SMS. Попробуйте позже.',
-    'auth/blocked-all-requests':        'Запросы временно заблокированы. Попробуйте через час.',
-  };
-  return map[code] || ('Ошибка: ' + (code || 'неизвестная'));
 }
 </script>
 </body>
